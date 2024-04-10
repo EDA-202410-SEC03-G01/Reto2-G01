@@ -32,21 +32,78 @@ El controlador se encarga de mediar entre la vista y el modelo.
 
 
 def new_controller():
+    control = {}# Este diccionario será utilizado para almacenar el modelo del sistema.
+    control['model'] = model.new_catalog()
+    return control
     """
     Crea una instancia del modelo
     """
     #TODO: Llamar la función del modelo que crea las estructuras de datos
-    pass
+
 
 
 # Funciones para la carga de datos
 
-def load_data(control, filename):
+def load_data(control,percent):
     """
     Carga los datos del reto
+    
     """
+    
+    
+    print("Cargando información")
+    
+    catalog= control["model"]
+    
+    
+    
+    jobs_size = load_jobs(catalog,percent)
+    skills_size = load_skills(catalog,percent)
+    employment_type_size = load_employment_types(catalog,percent)
+    multilocation_size = load_multilocations(catalog,percent)
+    return jobs_size, skills_size, employment_type_size, multilocation_size
     # TODO: Realizar la carga de datos
-    pass
+    
+def load_jobs(catalog, percent):
+    jobs_file = cf.data_dir + percent+"-por-jobs.csv"
+    
+    input_file = csv.DictReader(open(jobs_file, encoding='utf-8'),delimiter=";")
+    for job in input_file:
+        
+        model.add_job(catalog["jobs"], job)
+    #agregar model.mapa(catalog["mapa "],)
+    return model.jobs_size(catalog['jobs'])
+
+def load_skills(catalog, percent):
+    skills_file = cf.data_dir + percent+'-por-skills.csv'
+    input_file = csv.DictReader(open(skills_file, encoding='utf-8'))
+    for skill in input_file:
+        model.add_skill(catalog['skills'], skill)
+    return model.skills_size(catalog['skills'])
+
+def load_employment_types(catalog, percent):
+    employment_types_file = cf.data_dir + percent+'-por-employments_types.csv'
+    input_file = csv.DictReader(open(employment_types_file, encoding='utf-8'), delimiter=";")
+    for employment_type in input_file:
+        model.add_employment_type(catalog['employment_type'], employment_type)
+    return model.employment_type_size(catalog['employment_type'])
+
+def load_multilocations(catalog, percent):
+    multilocations_file = cf.data_dir + percent+'-por-multilocations.csv'
+    input_file = csv.DictReader(open(multilocations_file, encoding='utf-8'))
+    for multilocation in input_file:
+        model.add_employment_type(catalog['multilocation'], multilocation)
+    return model.employment_type_size(catalog['multilocation'])
+# tres primeros y tres ultimos 
+
+def primeros_tres(control):
+    return model.primeros_tres(control["model"])
+
+
+
+def ultimos_tres(control):
+    return model.ultimos_tres(control["model"])
+
 
 
 # Funciones de ordenamiento

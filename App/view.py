@@ -39,13 +39,16 @@ se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
 
-
+listType= "ARRAY_LIST"
 def new_controller():
+    control= controller.new_controller()
+    return control 
     """
+
         Se crea una instancia del controlador
     """
     #TODO: Llamar la función del controlador donde se crean las estructuras de datos
-    pass
+    
 
 
 def print_menu():
@@ -62,21 +65,41 @@ def print_menu():
     print("0- Salir")
 
 
+
 def load_data(control):
     """
     Carga los datos
     """
-    #TODO: Realizar la carga de datos
-    pass
-
+    percent= input("ingrese el porcentaje:")
+    jobs_size, skills_size, employment_types_size, multilocations_size = controller.load_data(control,percent)
+    
+    print('Ofertas cargadas:', jobs_size)
+    print('Habilidades cargadas:', skills_size)
+    print('Tipos de contratacion:', employment_types_size)
+    print('Ubicaciones:', multilocations_size)
+    return jobs_size, skills_size, employment_types_size, multilocations_size
 
 def print_data(control, id):
     """
         Función que imprime un dato dado su ID
     """
-    #TODO: Realizar la función para imprimir un elemento
-    pass
+    print("Los primeros tres elementos de ", csv, "son: ")
 
+    for elements in lt.iterator(lista_inicial):
+        print("Title: ", elements["title"],", ","Street: ", elements["street"], ", ","City: ", elements["city"],", ", "Country_code: ", elements["country_code"],", ","Address_text ", elements["address_text"], ", ","Marker_icon", elements["marker_icon"], ", ","Workplace_type", elements["workplace_type"], ", ","Company_name ",elements["company_name"],", "," Company_url", elements["company_url"],  ", ", "Company_size ", elements["company_size"],", ", " Experience_level ", elements["experience_level"],", ","Published_at ", elements["published_at"],", ", "Remote_interview",elements["remote_interview"],", ","Open_to_hire_ukrainians", elements["open_to_hire_ukrainians"],", ","Id",elements["id"],"Display_offer",elements["display_offer"],"\n")
+        
+    print("Los ultimos tres elementos de ", csv, "son: ")
+
+    for ele in lt.iterator(lista_final):
+        print("Title: ", ele["title"],", ","Street: ", ele["street"], ", ","City: ", ele["city"],", ", "Country_code: ", ele["country_code"],", ","Address_text ", ele["address_text"], ", ","Marker_icon", ele["marker_icon"], ", ","Workplace_type", ele["workplace_type"], ", ","Company_name ",ele["company_name"],", "," Company_url", ele["company_url"],  ", ", "Company_size ", ele["company_size"],", ", " Experience_level ", ele["experience_level"],", ","Published_at ", ele["published_at"],", ", "Remote_interview",ele["remote_interview"],", ","Open_to_hire_ukrainians", ele["open_to_hire_ukrainians"],", ","Id",ele["id"],"Display_offer",ele["display_offer"],"\n")
+
+    #TODO: Realizar la función para imprimir un elemento
+    
+def print_lista(lista):
+    print("las ofertas cargadas son:")
+    for elements in lt.iterator(lista):
+        print("Title: ", elements["title"],", ","Street: ", elements["street"], ", ","City: ", elements["city"],", ", "Country_code: ", elements["country_code"],", ","Address_text ", elements["address_text"], ", ","Marker_icon", elements["marker_icon"], ", ","Workplace_type", elements["workplace_type"], ", ","Company_name ",elements["company_name"],", "," Company_url", elements["company_url"],  ", ", "Company_size ", elements["company_size"],", ", " Experience_level ", elements["experience_level"],", ","Published_at ", elements["published_at"],", ", "Remote_interview",elements["remote_interview"],", ","Open_to_hire_ukrainians", elements["open_to_hire_ukrainians"],", ","Id",elements["id"],"Display_offer",elements["display_offer"],"\n")
+   
 def print_req_1(control):
     """
         Función que imprime la solución del Requerimiento 1 en consola
@@ -146,9 +169,11 @@ control = new_controller()
 
 # main del reto
 if __name__ == "__main__":
+    
     """
     Menu principal
     """
+    
     working = True
     #ciclo del menu
     while working:
@@ -156,7 +181,17 @@ if __name__ == "__main__":
         inputs = input('Seleccione una opción para continuar\n')
         if int(inputs) == 1:
             print("Cargando información de los archivos ....\n")
-            data = load_data(control)
+            jobs_size, skills_size, employment_types_size, multilocations_size = load_data(control)
+            # Imprimir los mensajes con la información cargada
+            print('Ofertas cargadas:', jobs_size)
+            print('Habilidades cargadas:', skills_size)
+            print('Tipos de contratación:', employment_types_size)
+            print('Ubicaciones:', multilocations_size)
+            
+            
+        
+            
+        
         elif int(inputs) == 2:
             print_req_1(control)
 

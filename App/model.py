@@ -36,6 +36,9 @@ from DISClib.Algorithms.Sorting import insertionsort as ins
 from DISClib.Algorithms.Sorting import selectionsort as se
 from DISClib.Algorithms.Sorting import mergesort as merg
 from DISClib.Algorithms.Sorting import quicksort as quk
+from datetime import datetime # importar para las fechas 
+from datetime import timedelta
+from tabulate import tabulate 
 assert cf
 
 """
@@ -46,16 +49,76 @@ dos listas, una para los videos, otra para las categorias de los mismos.
 # Construccion de modelos
 
 
-def new_data_structs():
+def new_catalog():
+    catalog = {'jobs': None,
+               'skills': None,
+               'employment_type': None,
+               "multilocation": None } 
+    catalog["jobs"]= lt.newList("ARRAY_LIST")
+    catalog["skills"]=lt.newList("ARRAY_LIST")
+    catalog["employment_type"]=lt.newList("ARRAY_LIST")
+    catalog["multilocation"]=lt.newList("ARRAY_LIST")
+    #mapa_ofertas 
+    return catalog
     """
     Inicializa las estructuras de datos del modelo. Las crea de
     manera vacía para posteriormente almacenar la información.
     """
     #TODO: Inicializar las estructuras de datos
-    pass
+    # Crea y devuelve un diccionario vacio con las claves para despues almacenar la información 
+    
 
 
 # Funciones para agregar informacion al modelo
+# JOBS, con esta función obtenemos el total de ofertas de trabajo publicadas 
+
+def add_job(catalog, job):
+    lt.addLast(catalog, job)
+    return catalog
+def jobs_size(catalog):
+    return lt.size(catalog)
+
+#def add_mapa_job(catalog,job):
+    #si esta o no 
+    # si esta, se actualiza, si no se crea 
+    #utilizar las llaves de city ,company name 
+
+# SKILLS total de habilidades 
+def add_skill(catalog, skill):
+    lt.addLast(catalog, skill)
+    return catalog
+def skills_size(catalog):
+    return lt.size(catalog)
+
+# EMPLOYMENT TYPE, total de tipos de contratacion disponibles 
+def add_employment_type(catalog, employment_type):
+    lt.addLast(catalog, employment_type)
+    return catalog
+def employment_type_size(catalog):
+    return lt.size(catalog)
+
+# MULTILOCATIONS, total ubicaciones de la empresa que publica la oferta de trabajo. 
+def add_multilocation(catalog ,multilocation):
+    lt.addLast(catalog, multilocation)
+    return catalog 
+def multilocation_size(catalog):
+    return lt.size(catalog)
+
+#Funciones primeros y ultimos 3
+def primeros_tres(catalog):
+    job_Newlist= lt.subList(sa.sort(catalog["jobs"],compare_by_fecha),1,3)
+    skills_Newlist= lt.subList(catalog["skills"],1,3)
+    employment_type_Newlist= lt.subList(catalog["employment_type"],1,3)
+    return job_Newlist,skills_Newlist,employment_type_Newlist
+
+def ultimos_tres(catalog):
+    job_Newlist= lt.subList(catalog["jobs"],lt.size(catalog["jobs"])-2,3)
+    skills_Newlist= lt.subList(catalog["skills"],lt.size(catalog["skills"])-2,3)
+    employment_type_Newlist= lt.subList(catalog["employment_types"],lt.size(catalog["employment_type"])-2,3)
+    return job_Newlist,skills_Newlist,employment_type_Newlist
+
+
+
 
 def add_data(data_structs, data):
     """
