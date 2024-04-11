@@ -25,15 +25,27 @@ import model
 import time
 import csv
 import tracemalloc
+from datetime import datetime
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
 """
 
 
-def new_controller():
+def measure_time(function):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = function(*args, **kwargs)
+        total = time.time() - start
+        print(total, 'segundos demorados' )
+        return result
+
+    return wrapper
+
+
+def new_controller(size, map_type, charge_factor):
     control = {}# Este diccionario será utilizado para almacenar el modelo del sistema.
-    control['model'] = model.new_catalog()
+    control['model'] = model.new_catalog(size, map_type, charge_factor)
     return control
     """
     Crea una instancia del modelo
@@ -58,20 +70,20 @@ def load_data(control,percent):
     
     
     jobs_size = load_jobs(catalog,percent)
-    skills_size = load_skills(catalog,percent)
-    employment_type_size = load_employment_types(catalog,percent)
-    multilocation_size = load_multilocations(catalog,percent)
-    return jobs_size, skills_size, employment_type_size, multilocation_size
+    
+    return control
     # TODO: Realizar la carga de datos
     
 def load_jobs(catalog, percent):
-    jobs_file = cf.data_dir + percent+"-por-jobs.csv"
+    jobs_file = cf.data_dir + percent +"jobs.csv" # Selecciona el archivo con el porcentaje de datos a cargar S
     
-    input_file = csv.DictReader(open(jobs_file, encoding='utf-8'),delimiter=";")
+    input_file = csv.DictReader(open(jobs_file, encoding='utf-8'),delimiter=";") # Obejto Iterador que permite leer el archivo
+    
     for job in input_file:
-        
-        model.add_job(catalog["jobs"], job)
-    #agregar model.mapa(catalog["mapa "],)
+        # 2022-04-14T17:24:00.000Z
+        job['published_at'] = datetime.strptime(job['published_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        model.add_job(catalog, job)
+        model.add_map_countries(catalog,job)
     return model.jobs_size(catalog['jobs'])
 
 def load_skills(catalog, percent):
@@ -125,13 +137,14 @@ def get_data(control, id):
     #TODO: Llamar la función del modelo para obtener un dato
     pass
 
-
-def req_1(control):
+@measure_time
+def req_1(control, country_code, experience_level, amount):
     """
     Retorna el resultado del requerimiento 1
     """
     # TODO: Modificar el requerimiento 1
-    pass
+    
+    return model.req_1(control["model"], country_code, experience_level, amount)
 
 
 def req_2(control):

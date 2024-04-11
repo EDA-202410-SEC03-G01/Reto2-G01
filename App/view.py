@@ -40,8 +40,8 @@ operación solicitada
 """
 
 listType= "ARRAY_LIST"
-def new_controller():
-    control= controller.new_controller()
+def new_controller(size, map_type, charge_factor):
+    control= controller.new_controller(size, map_type, charge_factor)
     return control 
     """
 
@@ -63,21 +63,112 @@ def print_menu():
     print("8- Ejecutar Requerimiento 7")
     print("9- Ejecutar Requerimiento 8")
     print("0- Salir")
+    
+    
 
 
 
-def load_data(control):
+def load_data(control, size):
+    
     """
     Carga los datos
     """
-    percent= input("ingrese el porcentaje:")
-    jobs_size, skills_size, employment_types_size, multilocations_size = controller.load_data(control,percent)
     
-    print('Ofertas cargadas:', jobs_size)
-    print('Habilidades cargadas:', skills_size)
-    print('Tipos de contratacion:', employment_types_size)
-    print('Ubicaciones:', multilocations_size)
-    return jobs_size, skills_size, employment_types_size, multilocations_size
+    return controller.load_data(control, size)
+
+
+def map_type():
+    
+    print("Escoja el tipo de mapa que desea usar")
+    print("1. Separate chaining")
+    print("2. Linear Probing")
+    
+    input_type = int(input("Ingrese el valor: "))
+    
+    if input_type == 1:
+        map_type =  "CHAINING"
+    else:
+        map_type = "PROBING"
+        
+    if map_type == "CHAINING":
+        print("Seleccione factor de carga")
+        print("1. 2")
+        print("2. 4")
+        print("3. 6")
+        print("4. 8")
+        charge_factor = int(input("Ingrese el valor: "))
+        if charge_factor == 1:
+            charge_factor = 2
+        elif charge_factor == 2:
+            charge_factor = 4
+        elif charge_factor == 3:
+            charge_factor = 6
+        else:
+            charge_factor = 8
+    
+    if map_type == "PROBING":
+        print("Seleccione factor de carga")
+        print("1. 0.5")
+        print("2. 0.75")
+        print("3. 0.9")
+        print("4. 0.95")
+        charge_factor = int(input("Ingrese el valor: "))
+        if charge_factor == 1:
+            charge_factor = 0.5
+        elif charge_factor == 2:
+            charge_factor = 0.75
+        elif charge_factor == 3:
+            charge_factor = 0.9
+        else:
+            charge_factor = 0.95
+    
+    return map_type, charge_factor
+        
+
+def choose_size():
+
+    print("Escoja el tamanio de los datos")
+    print("1. small")
+    print("2. medium")
+    print("3. large")
+    print("4. 10 porciento")
+    print("5. 20 porciento")
+    print("6. 30 porciento")
+    print("7. 40 porciento")
+    print("8. 50 porciento")
+    print("9. 60 porciento")
+    print("10. 70 porciento")
+    print("11. 80 porciento")
+    print("12. 90 porciento")
+    
+    value = int(input("Ingrese el valor: "))
+    
+    if value == 1:
+        return "small-"
+    elif value == 2:
+        return "medium-"
+    elif value == 3:
+        return "large-"
+    elif value == 4:
+        return "10-por-"
+    elif value == 5:
+        return "20-por-"
+    elif value == 6:
+        return "30-por-"
+    elif value == 7:
+        return "40-por-"
+    elif value == 8:
+        return "50-por-"
+    elif value == 9:
+        return "60-por-"
+    elif value == 10:
+        return "70-por-"
+    elif value == 11:
+        return "80-por-"
+    elif value == 12:
+        return "90-por-"
+    else:
+        return "large-"
 
 def print_data(control, id):
     """
@@ -100,12 +191,30 @@ def print_lista(lista):
     for elements in lt.iterator(lista):
         print("Title: ", elements["title"],", ","Street: ", elements["street"], ", ","City: ", elements["city"],", ", "Country_code: ", elements["country_code"],", ","Address_text ", elements["address_text"], ", ","Marker_icon", elements["marker_icon"], ", ","Workplace_type", elements["workplace_type"], ", ","Company_name ",elements["company_name"],", "," Company_url", elements["company_url"],  ", ", "Company_size ", elements["company_size"],", ", " Experience_level ", elements["experience_level"],", ","Published_at ", elements["published_at"],", ", "Remote_interview",elements["remote_interview"],", ","Open_to_hire_ukrainians", elements["open_to_hire_ukrainians"],", ","Id",elements["id"],"Display_offer",elements["display_offer"],"\n")
    
-def print_req_1(control):
+def print_req_1(control, country_code, experience_level, amount):
     """
         Función que imprime la solución del Requerimiento 1 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 1
-    pass
+    
+    answer = controller.req_1(control, country_code, experience_level, amount)
+
+    
+    if answer is not None:
+        amount_jobs_country = answer[0]
+        amount_jobs_by_experience = answer[1]
+        table_jobs = answer[2]
+
+        print("======== Requerimiento 1: Respuesta ========")
+        print(f"\nLa cantidad de ofertas de trabajo en el pais {country_code} son {amount_jobs_country}")
+        print(f"La cantidad de ofertas de trabajo en el nivel de experiencia {experience_level} son {amount_jobs_by_experience}")
+        
+        print(f"\nLas {amount} ofertas de trabajo mas recientes en el pais {country_code} y nivel de experiencia {experience_level} son:")
+        print(table_jobs)
+    else:
+        print("======== Requerimiento 1: Respuesta ========")
+        print("No se encontraron ofertas de trabajo con los parametros ingresados")
+
 
 
 def print_req_2(control):
@@ -165,7 +274,6 @@ def print_req_8(control):
 
 
 # Se crea el controlador asociado a la vista
-control = new_controller()
 
 # main del reto
 if __name__ == "__main__":
@@ -180,20 +288,19 @@ if __name__ == "__main__":
         print_menu()
         inputs = input('Seleccione una opción para continuar\n')
         if int(inputs) == 1:
+            size = choose_size()
+            map_t, charge_f = map_type()
+            control = new_controller(size, map_t, charge_f)
             print("Cargando información de los archivos ....\n")
-            jobs_size, skills_size, employment_types_size, multilocations_size = load_data(control)
-            # Imprimir los mensajes con la información cargada
-            print('Ofertas cargadas:', jobs_size)
-            print('Habilidades cargadas:', skills_size)
-            print('Tipos de contratación:', employment_types_size)
-            print('Ubicaciones:', multilocations_size)
-            
-            
-        
-            
+            control = load_data(control, size)
+            print("La información ha sido cargada con éxito\n")
         
         elif int(inputs) == 2:
-            print_req_1(control)
+            print("========== Requerimiento 1 - Listar las últimas N ofertas de trabajo según su país y nivel de experticia ========== ")
+            country_code = input("Ingrese el código del país: ")
+            experience_level = input("Ingrese el nivel de experiencia: ")
+            amount = int(input("Ingrese la cantidad de ofertas que desea ver: "))
+            print_req_1(control, country_code, experience_level, amount)
 
         elif int(inputs) == 3:
             print_req_2(control)
