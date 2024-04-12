@@ -71,6 +71,7 @@ def load_data(control,percent):
     
     jobs_size = load_jobs(catalog,percent)
     control = load_employments(catalog,percent)
+    load_skills(catalog,percent)
     
     return catalog
     # TODO: Realizar la carga de datos
@@ -98,8 +99,17 @@ def load_employments(catalog, percent):
         model.add_employment(catalog, employment)
     
     return catalog
-# tres primeros y tres ultimos 
 
+def load_skills(catalog, percent):
+    skills_file = cf.data_dir + percent +"skills.csv" # Selecciona el archivo con el porcentaje de datos a cargar S 
+    
+    input_file = csv.DictReader(open(skills_file, encoding='utf-8'),delimiter=";") # Obejto Iterador que permite leer el archivo
+    
+    for skill in input_file:
+        model.add_skill(catalog, skill)
+    
+    return catalog
+# tres primeros y tres ultimos 
 
 
 # Funciones de ordenamiento
@@ -128,7 +138,7 @@ def req_1(control, country_code, experience_level, amount):
     """
     # TODO: Modificar el requerimiento 1
     
-    return model.req_1(control["model"], country_code, experience_level, amount)
+    return model.req_1(control, country_code, experience_level, amount)
 
 
 def req_2(control):
@@ -171,13 +181,13 @@ def req_6(control ,amount_cities, level, year):
     # TODO: Modificar el requerimiento 6
     return model.req_6(control, amount_cities, level, year)
 
-
-def req_7(control):
+@measure_time
+def req_7(control, amount_countries,  year, month):
     """
     Retorna el resultado del requerimiento 7
     """
     # TODO: Modificar el requerimiento 7
-    pass
+    return model.req_7(control, amount_countries,  year, month)
 
 
 def req_8(control):

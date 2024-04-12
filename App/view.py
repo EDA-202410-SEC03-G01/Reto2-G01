@@ -20,6 +20,7 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+
 import config as cf
 import sys
 import controller
@@ -294,12 +295,28 @@ def print_req_6(control, amount_cities, level, year):
         print("No se encontraron ofertas de trabajo con los parametros ingresados")
 
 
-def print_req_7(control):
+def print_req_7(control, amount_countries, year, month):
     """
         Función que imprime la solución del Requerimiento 7 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 7
-    pass
+    
+    answer = controller.req_7(control, amount_countries, year, month)
+    
+    if answer is not None:
+        amount_jobs, amount_cities, best_country, best_city, multitable = answer
+        print("======== Requerimiento 7: Respuesta ========")
+        print(f"El total de ofertas de trabajo en el año {year} y mes {month} son {amount_jobs}")
+        print(f"El total de ciudades con ofertas de trabajo en el año {year} y mes {month} son {amount_cities}")
+        print(f"El pais con mayor cantidad de ofertas de trabajo en el año {year} y mes {month} es {best_country['country']} con {best_country['amount_jobs']} ofertas")
+        print(f"La ciudad con mayor cantidad de ofertas de trabajo en el año {year} y mes {month} es {best_city['city']} con {best_city['amount']} ofertas")
+        print(f"Los {amount_countries} paises con mayor cantidad de ofertas de trabajo en el año {year} y mes {month} son:")
+        for table in multitable:
+            print(table)
+            print("\n")
+    else:
+        print("======== Requerimiento 7: Respuesta ========")
+        print("No se encontraron ofertas de trabajo con los parametros ingresados")
 
 
 def print_req_8(control):
@@ -363,7 +380,11 @@ if __name__ == "__main__":
             print_req_6(control, amount_cities, level, year)
 
         elif int(inputs) == 8:
-            print_req_7(control)
+            print("========== Requerimiento 7 - Clasificar las N paises con mayor número de ofertas de trabajo ==========")
+            amount_countries = int(input("Ingrese la cantidad de paises que desea ver: "))
+            year = int(input("Ingrese el año (YYYY): "))
+            month = int(input("Ingrese el mes (MM): "))
+            print_req_7(control, amount_countries, year, month)
 
         elif int(inputs) == 9:
             print_req_8(control)

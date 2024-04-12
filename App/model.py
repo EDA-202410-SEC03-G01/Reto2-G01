@@ -1,4 +1,10 @@
-﻿""" 
+﻿"""
+ * Copyright 2020, Departamento de sistemas y Computación,
+ * Universidad de Los Andes
+ *
+ *
+ * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +22,7 @@
  * Contribuciones:
  *
  * Dario Correal - Version inicial
-"""
+ """
 
 
 import config as cf
@@ -728,36 +734,140 @@ def req_7(catalog, amount_countries, year, month):
     Función que soluciona el requerimiento 7
     """
     # TODO: Realizar el requerimiento 7
-    
+    amount_jobs = 0
     map_countries = catalog['map_countries']
     map_cities = mp.newMap(500, maptype='PROBING', loadfactor=0.5)
     
     
     list_countries, amount_countries = sort_countries(map_countries, amount_countries)
     
+    filtered_countries, map_cities, amount_jobs = obtain_data_rq7(catalog, list_countries, year, month, map_cities, amount_jobs)
     
-    return False
- 
-def obtain_data_rq7(control, list_countries, year, month):
+    amount_cities = mp.size(map_cities)
+    best_country = obtain_best_country(filtered_countries)
+    best_city = obtain_best_city(map_cities)
+    
+    multitable = tabular_data_rq7(filtered_countries)
+
+    return amount_jobs, amount_cities, best_country, best_city, multitable 
+
+def tabular_data_rq7(filtered_countries):
+    
+    multitable = []
+    headers = ['Pais','Nivel', '#Skills', 'MD Skill', 'LD Skill', 'Average Level', 'Amount Companies', 'Best_Company', 'Worst_Company']    
+    for country in lt.iterator(filtered_countries):
+        table = []
+        for level in lt.iterator(country):
+            row = [0,0,0,0,0,0,0,0,0]
+            row[0] = me.getValue(mp.get(level, 'country'))
+            row[1] = me.getValue(mp.get(level, 'experience_level'))
+            row[2] = mp.size(me.getValue(mp.get(level, 'map_skills')))
+            best_skill, worst_skill = obtain_best_worst_skill(me.getValue(mp.get(level, 'map_skills')))
+            row[3] = best_skill
+            row[4] = worst_skill
+            if me.getValue(mp.get(level, 'counter')) == 0:
+                row[5] = 0
+            else:
+                row[5] = me.getValue(mp.get(level, 'summation')) / me.getValue(mp.get(level, 'counter'))
+            row[6] = mp.size(me.getValue(mp.get(level, 'map_companies')))
+            best_company, worst_company = obtain_best_worst_company(me.getValue(mp.get(level, 'map_companies')))
+            row[7] = best_company
+            row[8] = worst_company
+            table.append(row)
+            
+        multitable.append(tabulate(table, headers, tablefmt='grid'))
+    
+    return multitable
+    
+
+def obtain_best_worst_company(map_companies):
+    
+    list_companies = mp.valueSet(map_companies)
+    if lt.size(list_companies) == 0:
+        return None, None
+    merg.sort(list_companies, compare_city_by_size)
+    
+    best_company = lt.firstElement(list_companies)
+    worst_company = lt.lastElement(list_companies)
+    
+    best_company = {'company': lt.firstElement(best_company)['company_name'], 'amount_jobs': lt.size(best_company)}
+    worst_company = {'company': lt.firstElement(worst_company)['company_name'], 'amount_jobs': lt.size(worst_company)}
+    
+    return best_company, worst_company
+          
+def obtain_best_worst_skill(map_skills):
+    
+    list_skills = mp.valueSet(map_skills)
+    
+    merg.sort(list_skills, compare_city_by_amount)
+    
+    best_skill = lt.firstElement(list_skills)
+    worst_skill = lt.lastElement(list_skills)
+    
+    return best_skill, worst_skill
+    
+            
+
+def obtain_best_city(map_cities):
+    
+    list_cities = mp.valueSet(map_cities)
+    
+    merg.sort(list_cities, compare_city_by_amount)
+    
+    return lt.firstElement(list_cities)
+    
+
+def obtain_best_country(filtered_countries):
+    
+    best_country = lt.firstElement(filtered_countries)
+    best_country_name = me.getValue(mp.get((lt.firstElement(best_country)), 'country'))
+    amount_jobs = 0
+    for level in lt.iterator(best_country):
+        amount_jobs += me.getValue(mp.get(level, 'amount_jobs'))
+    
+    best_country = {'country': best_country_name, 'amount_jobs': amount_jobs}
+    
+    return best_country 
+
+def obtain_data_rq7(control, list_countries, year, month, map_cities, amount_jobs):
     
     filtered_countries = lt.newList(datastructure='ARRAY_LIST')
     
     for country in lt.iterator(list_countries):
         filter_country = lt.newList(datastructure='ARRAY_LIST')
-
-def filter_levels(control ,country, filter_country, year, month):
+        filter_country, map_cities, amount_jobs = filter_levels(control, country, filter_country, year, month, map_cities, amount_jobs)
+        lt.addLast(filtered_countries, filter_country)
     
-    map_by_experience = me.getValue(mp.get(country, 'map_by_experience'))
+    return filtered_countries, map_cities, amount_jobs
+
+def filter_levels(control ,country, filter_country, year, month, map_cities, amount_jobs):
+    
+    map_by_experience = country['map_by_experience']
+    country_code = country['country_code']
     
     for experience in lt.iterator(mp.keySet(map_by_experience)):
-        experience_map = new_experience_filtered(experience)
+        experience_map = new_experience_filtered(experience, country_code)
         list_jobs = me.getValue(mp.get(map_by_experience, experience))
         
         for job in lt.iterator(list_jobs):
             job = examine_job(job, year, month)
             
             if job is not None:
-                pass
+                update_info_experience(control, experience_map, job)
+                actualize_map_city(map_cities, job)
+                amount_jobs += 1
+        
+        lt.addLast(filter_country, experience_map)
+    
+    return filter_country, map_cities, amount_jobs
+
+def actualize_map_city(map_cities,job):
+    if mp.contains(map_cities, job['city']):
+        city_info = me.getValue(mp.get(map_cities, job['city']))
+        city_info['amount'] += 1
+        mp.put(map_cities, job['city'], city_info)
+    else:
+        mp.put(map_cities, job['city'], {'city': job['city'], 'amount': 1})    
 
 def update_info_experience(control, experience_map, job):
         
@@ -771,14 +881,36 @@ def update_info_experience(control, experience_map, job):
         
     mp.put(experience_map, 'amount_jobs', amount_jobs)
         
-    update_companies(map_companies, job)
-    update_skills(map_skills, job)
-        
+    update_companies(control, map_companies, job)
+    summation, counter = update_skills(control, map_skills, job, summation, counter)
+    mp.put(experience_map, 'summation', summation)
+    mp.put(experience_map, 'counter', counter)
+            
     return experience_map
 
-def update_skills(control, map_skills, job):
-    pass
+def update_skills(control, map_skills, job, summation, counter):
     
+    catalog_map_skills = control['map_skills']
+    
+    if mp.contains(catalog_map_skills, job['id']):
+        entry = mp.get(catalog_map_skills, job['id'])
+        list_skills = me.getValue(entry)
+        for skill in lt.iterator(list_skills):
+            update_map_level_skills(map_skills, skill)
+            summation += int(skill['level'])
+            counter += 1
+    
+    return summation, counter
+        
+def update_map_level_skills(map_skills, skill):
+    
+    if mp.contains(map_skills, skill['name']):
+        entry = mp.get(map_skills, skill['name'])
+        entry_skill = me.getValue(entry)
+        entry_skill['amount'] += 1
+        mp.put(map_skills, skill['name'], entry_skill)
+    else:
+        mp.put(map_skills, skill['name'], {'name': skill['name'], 'amount': 1})    
 
 def examine_job(job, year, month):
     
@@ -787,10 +919,10 @@ def examine_job(job, year, month):
     else:
         return None
 
-def new_experience_filtered(experience_level):
+def new_experience_filtered(experience_level, country_code):
     
-    experience_map = mp.newMap(10, maptype='PROBING', loadfactor=0.5)
-    
+    experience_map = mp.newMap(6, maptype='PROBING', loadfactor=0.5)
+    mp.put(experience_map, 'country', country_code)
     mp.put(experience_map, 'experience_level', experience_level)
     mp.put(experience_map, 'amount_jobs', 0)
     mp.put(experience_map, 'map_companies', mp.newMap(100, maptype='PROBING', loadfactor=0.5))
@@ -813,7 +945,6 @@ def sort_countries(map_countries, amount_countries):
     
     return sublist_countries, amount_countries
     
-
 def req_8(data_structs):
     """
     Función que soluciona el requerimiento 8
@@ -875,8 +1006,8 @@ def compare_countries_by_size(country1, country2):
     """
     Compara dos países por la cantidad de ofertas de trabajo publicadas.
     """
-    country1_size = lt.size(me.getValue(mp.get(country1, 'list_jobs')))
-    country2_size = lt.size(me.getValue(mp.get(country2, 'list_jobs')))
+    country1_size = lt.size(country1['list_jobs'])
+    country2_size = lt.size(country2['list_jobs'])
     
     return country1_size > country2_size
 
@@ -887,13 +1018,26 @@ def compare_by_date_and_country(job1, job2):
     else:
         return job1['published_at'] > job2['published_at']
 
+def compare_company_by_size(company1, company2):
+    """
+    Compara dos compañias por la cantidad de ofertas de trabajo publicadas.
+    """
+    return lt.size(company1) > lt.size(company2)
+
 def compare_city_by_size(city1, city2):
     """
     Compara dos ciudades por la cantidad de ofertas de trabajo publicadas.
     """
     return lt.size(city1) > lt.size(city2)
 
-
+def compare_city_by_amount(city1, city2):
+    """
+    Compara dos ciudades por la cantidad de ofertas de trabajo publicadas.
+    """
+    amount1 = city1['amount']
+    amount2 = city2['amount']
+    
+    return amount1 > amount2
 def sort_criteria(data_1, data_2):
     """sortCriteria criterio de ordenamiento para las funciones de ordenamiento
 
