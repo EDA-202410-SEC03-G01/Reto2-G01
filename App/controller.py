@@ -70,8 +70,9 @@ def load_data(control,percent):
     
     
     jobs_size = load_jobs(catalog,percent)
+    control = load_employments(catalog,percent)
     
-    return control
+    return catalog
     # TODO: Realizar la carga de datos
     
 def load_jobs(catalog, percent):
@@ -84,28 +85,19 @@ def load_jobs(catalog, percent):
         job['published_at'] = datetime.strptime(job['published_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
         model.add_job(catalog, job)
         model.add_map_countries(catalog,job)
-    return model.jobs_size(catalog['jobs'])
+        model.add_map_companies(catalog, job)
+        model.add_map_cities(catalog, job)
+    return catalog
 
-def load_skills(catalog, percent):
-    skills_file = cf.data_dir + percent+'-por-skills.csv'
-    input_file = csv.DictReader(open(skills_file, encoding='utf-8'))
-    for skill in input_file:
-        model.add_skill(catalog['skills'], skill)
-    return model.skills_size(catalog['skills'])
-
-def load_employment_types(catalog, percent):
-    employment_types_file = cf.data_dir + percent+'-por-employments_types.csv'
-    input_file = csv.DictReader(open(employment_types_file, encoding='utf-8'), delimiter=";")
-    for employment_type in input_file:
-        model.add_employment_type(catalog['employment_type'], employment_type)
-    return model.employment_type_size(catalog['employment_type'])
-
-def load_multilocations(catalog, percent):
-    multilocations_file = cf.data_dir + percent+'-por-multilocations.csv'
-    input_file = csv.DictReader(open(multilocations_file, encoding='utf-8'))
-    for multilocation in input_file:
-        model.add_employment_type(catalog['multilocation'], multilocation)
-    return model.employment_type_size(catalog['multilocation'])
+def load_employments(catalog, percent):
+    employments_file = cf.data_dir + percent +"employments_types.csv" # Selecciona el archivo con el porcentaje de datos a cargar S 
+    
+    input_file = csv.DictReader(open(employments_file, encoding='utf-8'),delimiter=";") # Obejto Iterador que permite leer el archivo
+    
+    for employment in input_file:
+        model.add_employment(catalog, employment)
+    
+    return catalog
 # tres primeros y tres ultimos 
 
 def primeros_tres(control):
@@ -154,13 +146,14 @@ def req_2(control):
     # TODO: Modificar el requerimiento 2
     pass
 
-
-def req_3(control):
+@measure_time
+def req_3(control, company_name, start_date, final_date ):
     """
     Retorna el resultado del requerimiento 3
     """
     # TODO: Modificar el requerimiento 3
-    pass
+    
+    return model.req_3(control["model"], company_name, start_date, final_date   )
 
 
 def req_4(control):
@@ -178,12 +171,13 @@ def req_5(control):
     # TODO: Modificar el requerimiento 5
     pass
 
-def req_6(control):
+@measure_time
+def req_6(control ,amount_cities, level, year):
     """
     Retorna el resultado del requerimiento 6
     """
     # TODO: Modificar el requerimiento 6
-    pass
+    return model.req_6(control, amount_cities, level, year)
 
 
 def req_7(control):

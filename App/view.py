@@ -225,12 +225,33 @@ def print_req_2(control):
     pass
 
 
-def print_req_3(control):
+def print_req_3(control, company_name, start_date, final_date):
     """
         Función que imprime la solución del Requerimiento 3 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 3
-    pass
+    
+    answer = controller.req_3(control, company_name, start_date, final_date)
+    
+    if answer is not None:
+        table = answer[0]
+        amount_offers = answer[1]
+        amount_senior = answer[2]
+        amount_junior = answer[3]
+        amount_mid = answer[4]
+        
+        print("======== Requerimiento 3: Respuesta ========")
+        print(f"La cantidad de ofertas de trabajo de la empresa {company_name} son {amount_offers}")
+        print(f"La cantidad de ofertas de trabajo de nivel senior son {amount_senior}")
+        print(f"La cantidad de ofertas de trabajo de nivel junior son {amount_junior}")
+        print(f"La cantidad de ofertas de trabajo de nivel mid son {amount_mid}")
+        print(f"El listado de ofertas de trabajo ordenadas por fecha y pais de la empresa {company_name} son los siguientes:")
+        print(table)
+        
+        
+    else:
+        print("======== Requerimiento 3: Respuesta ========")
+        print("No se encontraron ofertas de trabajo con los parametros ingresados")
 
 
 def print_req_4(control):
@@ -249,12 +270,19 @@ def print_req_5(control):
     pass
 
 
-def print_req_6(control):
+def print_req_6(control, amount_cities, level, year):
     """
         Función que imprime la solución del Requerimiento 6 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 6
-    pass
+    
+    answer = controller.req_6(control, amount_cities, level, year)
+    
+    if answer is not None:
+        print("======== Requerimiento 6: Respuesta ========")
+    else:
+        print("======== Requerimiento 6: Respuesta ========")
+        print("No se encontraron ofertas de trabajo con los parametros ingresados")
 
 
 def print_req_7(control):
@@ -306,7 +334,11 @@ if __name__ == "__main__":
             print_req_2(control)
 
         elif int(inputs) == 4:
-            print_req_3(control)
+            print("========== Requerimiento 3 - Consultar las ofertas que publicó una empresa durante un periodo especifico de tiempo ========")
+            company_name = input("Ingrese el nombre de la empresa: ")
+            start_date = input("Ingrese la fecha inicial de busqueda (YYYY-MM-DD)")
+            final_date = input("Ingresa la fecha final del busqueda (YYYY-MM-DD)")
+            print_req_3(control, company_name, start_date, final_date)
 
         elif int(inputs) == 5:
             print_req_4(control)
@@ -315,7 +347,11 @@ if __name__ == "__main__":
             print_req_5(control)
 
         elif int(inputs) == 7:
-            print_req_6(control)
+            print("========== Requerimiento 6 - Clasificar las N ciudades con mayor número de ofertas de trabajo de un año por experticia ==========")
+            amount_cities = int(input("Ingrese la cantidad de ciudades que desea ver: "))
+            level = input("Ingrese el nivel de experiencia: ")
+            year = int(input("Ingrese el año: "))
+            print_req_6(control, amount_cities, level, year)
 
         elif int(inputs) == 8:
             print_req_7(control)
