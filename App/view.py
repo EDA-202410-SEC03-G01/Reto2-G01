@@ -170,21 +170,21 @@ def choose_size():
     else:
         return "large-"
 
-def print_data(control, id):
-    """
-        Función que imprime un dato dado su ID
-    """
-    print("Los primeros tres elementos de ", csv, "son: ")
+# def print_data(control, id):
+#     """
+#         Función que imprime un dato dado su ID
+#     """
+#     print("Los primeros tres elementos de ", csv, "son: ")
 
-    for elements in lt.iterator(lista_inicial):
-        print("Title: ", elements["title"],", ","Street: ", elements["street"], ", ","City: ", elements["city"],", ", "Country_code: ", elements["country_code"],", ","Address_text ", elements["address_text"], ", ","Marker_icon", elements["marker_icon"], ", ","Workplace_type", elements["workplace_type"], ", ","Company_name ",elements["company_name"],", "," Company_url", elements["company_url"],  ", ", "Company_size ", elements["company_size"],", ", " Experience_level ", elements["experience_level"],", ","Published_at ", elements["published_at"],", ", "Remote_interview",elements["remote_interview"],", ","Open_to_hire_ukrainians", elements["open_to_hire_ukrainians"],", ","Id",elements["id"],"Display_offer",elements["display_offer"],"\n")
+#     for elements in lt.iterator(lista_inicial):
+#         print("Title: ", elements["title"],", ","Street: ", elements["street"], ", ","City: ", elements["city"],", ", "Country_code: ", elements["country_code"],", ","Address_text ", elements["address_text"], ", ","Marker_icon", elements["marker_icon"], ", ","Workplace_type", elements["workplace_type"], ", ","Company_name ",elements["company_name"],", "," Company_url", elements["company_url"],  ", ", "Company_size ", elements["company_size"],", ", " Experience_level ", elements["experience_level"],", ","Published_at ", elements["published_at"],", ", "Remote_interview",elements["remote_interview"],", ","Open_to_hire_ukrainians", elements["open_to_hire_ukrainians"],", ","Id",elements["id"],"Display_offer",elements["display_offer"],"\n")
         
-    print("Los ultimos tres elementos de ", csv, "son: ")
+#     print("Los ultimos tres elementos de ", csv, "son: ")
 
-    for ele in lt.iterator(lista_final):
-        print("Title: ", ele["title"],", ","Street: ", ele["street"], ", ","City: ", ele["city"],", ", "Country_code: ", ele["country_code"],", ","Address_text ", ele["address_text"], ", ","Marker_icon", ele["marker_icon"], ", ","Workplace_type", ele["workplace_type"], ", ","Company_name ",ele["company_name"],", "," Company_url", ele["company_url"],  ", ", "Company_size ", ele["company_size"],", ", " Experience_level ", ele["experience_level"],", ","Published_at ", ele["published_at"],", ", "Remote_interview",ele["remote_interview"],", ","Open_to_hire_ukrainians", ele["open_to_hire_ukrainians"],", ","Id",ele["id"],"Display_offer",ele["display_offer"],"\n")
+#     for ele in lt.iterator(lista_final):
+#         print("Title: ", ele["title"],", ","Street: ", ele["street"], ", ","City: ", ele["city"],", ", "Country_code: ", ele["country_code"],", ","Address_text ", ele["address_text"], ", ","Marker_icon", ele["marker_icon"], ", ","Workplace_type", ele["workplace_type"], ", ","Company_name ",ele["company_name"],", "," Company_url", ele["company_url"],  ", ", "Company_size ", ele["company_size"],", ", " Experience_level ", ele["experience_level"],", ","Published_at ", ele["published_at"],", ", "Remote_interview",ele["remote_interview"],", ","Open_to_hire_ukrainians", ele["open_to_hire_ukrainians"],", ","Id",ele["id"],"Display_offer",ele["display_offer"],"\n")
 
-    #TODO: Realizar la función para imprimir un elemento
+#     #TODO: Realizar la función para imprimir un elemento
     
 def print_lista(lista):
     print("las ofertas cargadas son:")
@@ -279,7 +279,16 @@ def print_req_6(control, amount_cities, level, year):
     answer = controller.req_6(control, amount_cities, level, year)
     
     if answer is not None:
+        total_ciudades, total_empresas, total_ofertas, best_city, worst_city, tabulate_cities = answer
         print("======== Requerimiento 6: Respuesta ========")
+        print(f"El total de ciudades con ofertas de trabajo en el año {year} y nivel de experiencia {level} son {total_ciudades}")
+        print(f"El total de empresas con ofertas de trabajo en el año {year} y nivel de experiencia {level} son {total_empresas}")
+        print(f"El total de ofertas de trabajo en el año {year} y nivel de experiencia {level} son {total_ofertas}")
+        print(f"La ciudad con mayor cantidad de ofertas de trabajo en el año {year} y nivel de experiencia {level} es {best_city['city']} con {best_city['amount_jobs']} ofertas")
+        print(f"La ciudad con menor cantidad de ofertas de trabajo en el año {year} y nivel de experiencia {level} es {worst_city['city']} con {worst_city['amount_jobs']} ofertas")
+        print(f"Las {amount_cities} ciudades con mayor cantidad de ofertas de trabajo en el año {year} y nivel de experiencia {level} son:")
+        print(tabulate_cities)
+        
     else:
         print("======== Requerimiento 6: Respuesta ========")
         print("No se encontraron ofertas de trabajo con los parametros ingresados")

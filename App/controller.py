@@ -100,14 +100,6 @@ def load_employments(catalog, percent):
     return catalog
 # tres primeros y tres ultimos 
 
-def primeros_tres(control):
-    return model.primeros_tres(control["model"])
-
-
-
-def ultimos_tres(control):
-    return model.ultimos_tres(control["model"])
-
 
 
 # Funciones de ordenamiento
@@ -153,7 +145,7 @@ def req_3(control, company_name, start_date, final_date ):
     """
     # TODO: Modificar el requerimiento 3
     
-    return model.req_3(control["model"], company_name, start_date, final_date   )
+    return model.req_3(control, company_name, start_date, final_date   )
 
 
 def req_4(control):
